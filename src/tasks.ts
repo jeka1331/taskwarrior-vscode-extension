@@ -1,14 +1,14 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { exec, execFile, execSync, fork, spawn } from "child_process";
+import { execSync } from "child_process";
 import * as path from 'path';
 
 export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
 
 	private _onDidChangeTreeData: vscode.EventEmitter<Task | undefined | void> = new vscode.EventEmitter<Task | undefined | void>();
 	readonly onDidChangeTreeData: vscode.Event<Task | undefined | void> = this._onDidChangeTreeData.event;
-	constructor(private workspaceRoot: string | undefined) {
-	}
+	// constructor(private workspaceRoot: string | undefined) {
+	// }
 
 	refresh(): void {
 		this._onDidChangeTreeData.fire();
@@ -19,21 +19,12 @@ export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
 	}
 
 	getChildren(element?: Task): Thenable<Task[]> {
-		if (!this.workspaceRoot) {
-			vscode.window.showInformationMessage('No dependency in empty workspace');
-			return Promise.resolve([]);
-		}
 
 		if (element) {
-			return Promise.resolve(this.getDepsInPackageJson(path.join(this.workspaceRoot, 'node_modules', element.label, 'package.json')));
+			// Это в случае, если есть вложенность у задачи (пока их нет)
+			return Promise.resolve(this.getTasks());
 		} else {
-			const packageJsonPath = path.join(this.workspaceRoot, 'package.json');
-			if (this.pathExists(packageJsonPath)) {
-				return Promise.resolve(this.getDepsInPackageJson(packageJsonPath));
-			} else {
-				vscode.window.showInformationMessage('Workspace has no package.json');
-				return Promise.resolve([]);
-			}
+			return Promise.resolve(this.getTasks());
 		}
 
 	}
@@ -41,7 +32,7 @@ export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
 	/**
 	 * Given the path to package.json, read all its dependencies and devDependencies.
 	 */
-	private getDepsInPackageJson(packageJsonPath: string): Task[] {
+	private getTasks(): Task[] {
 		
 
 		const taskBinPath = '/usr/bin/task';
@@ -73,35 +64,7 @@ export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
 		// return deps.concat(devDeps);
 		console.log(_tasks);
 		return _tasks;
-		
-
-
-
-		// const taskBinPath = '/usr/bin/task';
-		// if (this.pathExists(taskBinPath)) {
-		// 	exec(`${taskBinPath} export`, (error, stdout) => {
-		// 		if (error) {
-		// 			console.error(`exec error: ${error}`);
-		// 			return;
-		// 		}
-		// 		const taskData = JSON.parse(stdout, (key, value) => {
-		// 			return value;
-		// 		});
-
-		// 		const tasks: Task[] = [];
-		// 		taskData.forEach((task: { description: string; id: string; }) => {
-		// 			tasks.push(new Task(task.description, task.id, vscode.TreeItemCollapsibleState.None));
-		// 		});
-		// 		console.log(tasks);
-		// 		return tasks;
-
-		// 	});
-		// }
-		// return [];
-
-
-
-
+	
 	}
 
 	private pathExists(p: string): boolean {
