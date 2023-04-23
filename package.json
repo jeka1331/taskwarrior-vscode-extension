@@ -1,138 +1,173 @@
 {
-	"name": "custom-view-samples",
-	"displayName": "Custom view Samples",
-	"description": "Samples for VSCode's view API",
-	"version": "0.0.1",
-	"publisher": "vscode-samples",
-	"private": true,
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-extension-samples"
-	},
-	"engines": {
-		"vscode": "^1.74.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onLanguage:json",
-		"onLanguage:jsonc"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "taskwarrior-tasks",
-					"title": "Taskwarrior tasks",
-					"icon": "media/dep.svg"
-				}
-			]
-		},
-		"views": {
-			"taskwarrior-tasks": [
-				{
-					"id": "taskwarriorTasks",
-					"name": "Current tasks",
-					"icon": "media/task.svg",
-					"contextualTitle": "Tasks from Taskwarrior binary"
-				},
-				{
-					"id": "taskwarriorContexts",
-					"name": "Contexts",
-					"icon": "media/context.svg",
-					"contextualTitle": "Contexts from Taskwarrior binary"
-				}
-
-			]
-		},
-		"commands": [
-			{
-				"command": "taskwarriorTasks.refreshEntry",
-				"title": "Refresh",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
-			},
-			{
-				"command": "taskwarriorTasks.addEntry",
-				"title": "Add"
-			},
-			{
-				"command": "taskwarriorTasks.editEntry",
-				"title": "Edit",
-				"icon": {
-					"light": "resources/light/edit.svg",
-					"dark": "resources/dark/edit.svg"
-				}
-			},
-			{
-				"command": "taskwarriorTasks.deleteEntry",
-				"title": "Delete"
-			}
-			
-		],
-		"menus": {
-			"view/title": [
-				{
-					"command": "taskwarriorTasks.refreshEntry",
-					"when": "view == taskwarriorTasks",
-					"group": "navigation"
-				},
-				{
-					"command": "taskwarriorTasks.addEntry",
-					"when": "view == taskwarriorTasks"
-				}
-			],
-			"view/item/context": [
-				{
-					"command": "taskwarriorTasks.editEntry",
-					"when": "view == taskwarriorTasks && viewItem == dependency",
-					"group": "inline"
-				},
-				{
-					"command": "taskwarriorTasks.deleteEntry",
-					"when": "view == taskwarriorTasks && viewItem == dependency"
-				}
-			]
-		},
-		"configuration": [
-			{
-				"title": "Taskwarrior Tasks",
-				"properties": {
-					"autorefresh": {
-						"type": "boolean",
-						"default": false
-					}
-				}
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"lint": "eslint \"src/**/*.ts\""
-	},
-	"devDependencies": {
-		"@types/ftp": "^0.3.33",
-		"@types/mkdirp": "^0.5.2",
-		"@types/node": "^16.11.7",
-		"@types/rimraf": "^2.0.2",
-		"@types/vscode": "^1.73.0",
-		"@typescript-eslint/eslint-plugin": "^5.42.0",
-		"@typescript-eslint/parser": "^5.42.0",
-		"eslint": "^8.26.0",
-		"typescript": "^4.9.4"
-	},
-	"dependencies": {
-		"ftp": "^0.3.10",
-		"jsonc-parser": "^0.4.2",
-		"minimist": "^1.2.6",
-		"mkdirp": "^0.5.1",
-		"rimraf": "^2.6.2"
-	}
+  "name": "custom-view-samples",
+  "displayName": "Custom view Samples",
+  "description": "Samples for VSCode's view API",
+  "version": "0.0.1",
+  "publisher": "vscode-samples",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/vscode-extension-samples"
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:json",
+    "onLanguage:jsonc"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "id": "taskwarrior-tasks.editTaskId",
+        "viewType": "taskwarrior-tasks.editTask",
+        "displayName": "Edit task",
+        "selector": [
+          {
+            "filenamePattern": "*.task"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "taskwarrior-tasks",
+          "title": "Taskwarrior tasks",
+          "icon": "media/dep.svg"
+        }
+      ]
+    },
+    "views": {
+      "taskwarrior-tasks": [
+        {
+          "id": "taskwarriorTasks",
+          "name": "Tasks",
+          "icon": "media/task.svg",
+          "contextualTitle": "Tasks from Taskwarrior binary"
+        },
+        {
+          "id": "taskwarriorTags",
+          "name": "Tags",
+          "icon": "media/context.svg",
+          "contextualTitle": "Tags from Taskwarrior binary"
+        },
+        {
+          "id": "taskwarriorStatuses",
+          "name": "Statuses",
+          "icon": "media/context.svg",
+          "contextualTitle": "Tags from Taskwarrior binary"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "taskwarriorTasks.refreshEntry",
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "taskwarriorTasks.addEntry",
+        "title": "Add"
+      },
+      {
+        "command": "taskwarriorTasks.editEntry",
+        "title": "Edit task",
+        "icon": {
+          "light": "resources/light/edit.svg",
+          "dark": "resources/dark/edit.svg"
+        }
+      },
+      {
+        "command": "taskwarriorTasks.deleteEntry",
+        "title": "Delete",
+        "icon": {
+          "light": "resources/light/delete.svg",
+          "dark": "resources/dark/delete.svg"
+        }
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "taskwarriorTasks.refreshEntry",
+          "when": "view == taskwarriorTasks",
+          "group": "navigation"
+        },
+        {
+          "command": "taskwarriorTasks.addEntry",
+          "when": "view == taskwarriorTasks"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "taskwarriorTasks.editEntry",
+          "when": "view == taskwarriorTasks && viewItem == dependency",
+          "group": "inline"
+        },
+        {
+          "command": "taskwarriorTasks.deleteEntry",
+          "when": "view == taskwarriorTasks && viewItem == dependency",
+          "group": "inline"
+        }
+      ]
+    },
+    "configuration": [
+      {
+        "title": "Taskwarrior Tasks",
+        "properties": {
+          "taskwarrior.autorefresh": {
+            "type": "boolean",
+            "default": false
+          },
+          "taskwarrior.linuxbinpath": {
+            "type": "string",
+            "default": "/usr/bin/task"
+          },
+          "taskwarrior.win32binpath": {
+            "type": "string",
+            "default": "C:\\cygwin64\\bin\\task.exe"
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint \"src/**/*.ts\""
+  },
+  "devDependencies": {
+    "@types/ftp": "^0.3.33",
+    "@types/mkdirp": "^0.5.2",
+    "@types/node": "^16.11.7",
+    "@types/rimraf": "^2.0.2",
+    "@types/underscore": "^1.11.4",
+    "@types/vscode": "^1.73.0",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "eslint": "^8.26.0",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "ftp": "^0.3.10",
+    "jsonc-parser": "^0.4.2",
+    "licia": "^1.38.0",
+    "minimist": "^1.2.6",
+    "mkdirp": "^0.5.1",
+    "os": "^0.1.2",
+    "rimraf": "^2.6.2",
+    "taskwarrior-lib": "^0.5.2",
+    "underscore": "^1.13.6"
+  }
 }
