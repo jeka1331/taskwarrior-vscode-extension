@@ -2,5 +2,4 @@ out
 node_modules
 yarn.lock
 package-lock.json
-resources/dark/edit.svg
-resources/light/edit.svg
+resources
