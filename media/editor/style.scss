@@ -1,0 +1,371 @@
+@import 'luna-setting/luna-setting.css';
+
+/* older version vscode fallback */
+.vscode-light {
+  --rowHoverBackground: rgba(0, 0, 1, 0.28);
+  --headerBorder: rgba(128, 128, 128, 0.35);
+}
+.vscode-dark {
+  --rowHoverBackground: rgba(128, 128, 128, 0.07);
+  --headerBorder: rgba(128, 128, 128, 0.35);
+}
+
+#search {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  background: var(--vscode-editor-background);
+  .input-container {
+    padding: 10px 20px;
+    padding-bottom: 0;
+    box-sizing: border-box;
+    max-width: 1040px;
+    margin: 0 auto;
+    &::after {
+      content: '';
+      display: block;
+      margin-top: 10px;
+      width: 100%;
+      border-bottom: 1px solid
+        var(--vscode-settings-headerBorder, var(--headerBorder));
+    }
+    input {
+      width: 100%;
+      display: block;
+      box-sizing: border-box;
+      background-color: var(--vscode-input-background);
+      color: var(--vscode-input-foreground);
+      border-width: 1px;
+      border-style: solid;
+      border-color: var(--vscode-settings-textInputBorder, transparent);
+      padding: 3px 6px;
+      border-radius: 2px;
+      height: 26px;
+      &:focus {
+        outline-color: var(
+          --vscode-settings-focusedRowBorder,
+          var(--vscode-focusBorder)
+        );
+        outline-width: 1px;
+        outline-style: solid;
+        outline-offset: -1px;
+        opacity: 1;
+      }
+    }
+  }
+}
+
+#container {
+  max-width: 1000px;
+  padding: 14px 0;
+  margin: 0 auto;
+  margin-top: 40px;
+  position: relative;
+}
+
+#toc-container {
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding-top: 15px;
+  width: 160px;
+  & > ul > li {
+    & > a {
+      padding-left: 10px;
+    }
+    & > ul > li {
+      & > a {
+        padding-left: 20px;
+      }
+      & > ul > li > a {
+        padding-left: 40px;
+      }
+    }
+  }
+  ul {
+    padding: 0;
+    margin: 0;
+  }
+  a {
+    font-size: 13px;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    white-space: nowrap;
+    color: var(--vscode-foreground);
+    text-decoration: none;
+    line-height: 22px;
+    display: inline-block;
+    padding: 0 2px;
+    outline: none;
+    &:hover {
+      color: var(--vscode-settings-settingsHeaderHoverForeground);
+    }
+    &.active {
+      font-weight: 700;
+      color: var(--vscode-settings-headerForeground);
+      opacity: 1;
+      &:focus {
+        outline-color: var(
+          --vscode-settings-focusedRowBorder,
+          var(--vscode-focusBorder)
+        );
+        outline-width: 1px;
+        outline-style: solid;
+        outline-offset: -1px;
+      }
+    }
+  }
+  li {
+    width: 100%;
+    font-size: 0;
+    list-style: none;
+  }
+}
+
+#settings-container {
+  padding-left: 180px;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 160px;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    border-left: 1px solid
+      var(--vscode-settings-headerBorder, var(--headerBorder));
+  }
+}
+
+.luna-setting {
+  color: var(--vscode-foreground);
+  background: transparent;
+}
+
+.luna-setting-item {
+  position: relative;
+  padding: 12px 14px 18px;
+  &.luna-setting-item-html {
+    padding: 0;
+  }
+  &.luna-setting-item-markdown {
+    * {
+      margin: 0;
+    }
+  }
+  line-height: 1.4em;
+  .luna-setting-title {
+    margin-bottom: 2px;
+  }
+  &:hover,
+  &.luna-setting-selected {
+    background: var(
+      --vscode-settings-rowHoverBackground,
+      var(--rowHoverBackground)
+    );
+  }
+  &.luna-setting-selected:focus {
+    outline-color: var(
+      --vscode-settings-focusedRowBorder,
+      var(--vscode-focusBorder)
+    );
+  }
+  .luna-setting-control,
+  .luna-setting-description {
+    font-size: 13px;
+  }
+  .luna-setting-description,
+  .luna-setting-control,
+  &.luna-setting-item-markdown {
+    code {
+      line-height: 15px;
+      font-family: var(--monaco-monospace-font);
+      color: var(--vscode-textPreformat-foreground);
+    }
+    a {
+      color: var(--vscode-textLink-foreground);
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  input {
+    font-size: 13px;
+    &:focus {
+      outline-color: var(
+        --vscode-settings-focusedRowBorder,
+        var(--vscode-focusBorder)
+      );
+      outline-width: 1px;
+      outline-style: solid;
+      outline-offset: -1px;
+      opacity: 1;
+    }
+  }
+}
+
+.luna-setting-item-title {
+  padding: 10px 10px 10px 15px;
+  color: var(--vscode-settings-headerForeground);
+  font-weight: 600;
+  &.luna-setting-level-1 {
+    font-size: 26px;
+  }
+  &.luna-setting-level-2 {
+    font-size: 22px;
+  }
+  &.luna-setting-level-3 {
+    font-size: 18px;
+  }
+}
+
+.luna-setting-item-input,
+.item-path {
+  input {
+    color: var(--vscode-settings-textInputForeground);
+    background: var(--vscode-settings-textInputBackground);
+    border-color: var(--vscode-settings-textInputBorder, transparent);
+    width: 420px;
+    padding: 4px 6px;
+  }
+}
+
+.luna-setting-item-select {
+  .luna-setting-select {
+    select {
+      width: 320px;
+      color: var(--vscode-settings-textInputForeground);
+      border-color: rgb(206, 206, 206);
+      background: var(--vscode-settings-textInputBackground);
+    }
+    &:after {
+      border-top-color: var(--vscode-settings-textInputForeground);
+    }
+  }
+}
+
+.luna-setting-item-checkbox {
+  input {
+    height: 18px;
+    width: 18px;
+    margin-top: 0;
+    border-color: var(--vscode-settings-checkboxBorder);
+    background-color: var(--vscode-settings-checkboxBackground);
+    &:checked {
+      border-color: var(
+        --vscode-settings-focusedRowBorder,
+        var(--vscode-focusBorder)
+      );
+      background-color: var(
+        --vscode-settings-focusedRowBorder,
+        var(--vscode-focusBorder)
+      );
+    }
+  }
+}
+
+.luna-setting-item-number {
+  input[type='number'] {
+    padding: 4px 6px;
+    width: 200px;
+    color: var(--vscode-settings-numberInputForeground);
+    background-color: var(--vscode-settings-numberInputBackground);
+    border-color: var(--vscode-settings-numberInputBorder, transparent);
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+}
+
+.luna-setting-item-button,
+.item-path {
+  button {
+    white-space: nowrap;
+    padding: 2px 14px;
+    margin-top: 4px;
+    color: var(--vscode-button-foreground);
+    background: var(--vscode-button-background);
+    border-color: var(--vscode-button-border, transparent);
+    &:hover,
+    &:active {
+      background: var(--vscode-button-hoverBackground);
+    }
+  }
+}
+
+.modified {
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 5px;
+    top: 12px;
+    width: 6px;
+    bottom: 18px;
+    border-left: 2px solid var(--vscode-settings-modifiedItemIndicator);
+  }
+}
+
+.item-markdown,
+.item-complex,
+.item-path {
+  padding: 12px 14px 18px;
+}
+
+.item-complex {
+  a.edit-source {
+    color: var(--vscode-textLink-foreground);
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.item-path {
+  input {
+    border: 1px solid #ccc;
+    border-color: var(--vscode-settings-textInputBorder, transparent);
+  }
+  button {
+    height: 25px;
+    margin: 0;
+  }
+}
+
+.vscode-dark {
+  .luna-setting-item-select {
+    .luna-setting-select {
+      select {
+        border-color: var(--vscode-settings-textInputBackground);
+      }
+    }
+  }
+  .luna-setting-item-checkbox {
+    input {
+      &:checked {
+        border-color: var(--vscode-settings-checkboxBorder);
+        background-color: var(--vscode-settings-checkboxBackground);
+      }
+    }
+  }
+}
+
+.hide-toc {
+  #toc-container {
+    display: none;
+  }
+  #settings-container {
+    padding-left: 0;
+    &::after {
+      display: none;
+    }
+  }
+}

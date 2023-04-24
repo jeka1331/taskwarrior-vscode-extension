@@ -1,32 +1,38 @@
 {
-  "name": "custom-view-samples",
-  "displayName": "Custom view Samples",
-  "description": "Samples for VSCode's view API",
+  "name": "taskwarrior-vscode-extension",
+  "displayName": "Taskwarrior Tasks",
+  "description": "Extension for manage taskwarrior from vscode",
   "version": "0.0.1",
-  "publisher": "vscode-samples",
+  "publisher": "mrjeka111@gmail.com",
   "private": true,
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Microsoft/vscode-extension-samples"
+    "url": "https://github.com/jeka1331/taskwarrior-vscode-extension"
   },
   "engines": {
     "vscode": "^1.74.0"
   },
+  "files": [
+    "out",
+    "l10n"
+  ],
   "categories": [
-    "Other"
+    "Visualization"
   ],
   "activationEvents": [
+    "onCustomEditor:settingsEditor.settingsedit",
+    "onCommand:settingsEditor.openFile",
     "onLanguage:json",
-    "onLanguage:jsonc"
+    "onLanguage:jsonc",
+    "onLanguage:properties"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "customEditors": [
       {
-        "id": "taskwarrior-tasks.editTaskId",
-        "viewType": "taskwarrior-tasks.editTask",
-        "displayName": "Edit task",
+        "viewType": "settingsEditor.settingsedit",
+        "displayName": "Settings Editor",
         "selector": [
           {
             "filenamePattern": "*.task"
@@ -48,7 +54,7 @@
       "taskwarrior-tasks": [
         {
           "id": "taskwarriorTasks",
-          "name": "Tasks",
+          "name": "Taskss",
           "icon": "media/task.svg",
           "contextualTitle": "Tasks from Taskwarrior binary"
         },
@@ -94,9 +100,31 @@
           "light": "resources/light/delete.svg",
           "dark": "resources/dark/delete.svg"
         }
+      },
+      {
+        "command": "settingsEditor.openEditor",
+        "title": "Settings Editor: Open File in Settings Editor",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "settingsEditor.openSource",
+        "title": "Settings Editor: Open File in Source",
+        "icon": "$(go-to-file)"
       }
     ],
     "menus": {
+      "editor/title": [
+        {
+          "command": "settingsEditor.openEditor",
+          "when": "settingsEditor.openEditor",
+          "group": "navigation@200"
+        },
+        {
+          "command": "settingsEditor.openSource",
+          "when": "settingsEditor.openSource",
+          "group": "navigation@200"
+        }
+      ],
       "view/title": [
         {
           "command": "taskwarriorTasks.refreshEntry",
@@ -144,22 +172,36 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "watch": "node .esbuild.config.js --watch",
     "lint": "eslint \"src/**/*.ts\""
   },
   "devDependencies": {
+    "@stoplight/json-schema-tree": "2.2.2",
+    "@types/mocha": "^10.0.1",
+    "@types/glob": "^8.0.0",
     "@types/ftp": "^0.3.33",
     "@types/mkdirp": "^0.5.2",
     "@types/node": "^16.11.7",
     "@types/rimraf": "^2.0.2",
     "@types/underscore": "^1.11.4",
-    "@types/vscode": "^1.73.0",
+    "@types/vscode": "1.76.0",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
-    "@typescript-eslint/parser": "^5.42.0",
+    "@vscode/test-electron": "2.3.0",
+    "@typescript-eslint/parser": "5.55.0",
+    "json5": "^2.2.3",
+    "prettier": "^2.8.3",
+    "eslint-config-prettier": "^8.6.0",
+    "esbuild": "^0.17.18",
+    "glob": "^8.0.3",
+    "mocha": "^10.1.0",
+    "sass": "1.59.3",
+    "esbuild-sass-plugin": "2.6.0",
     "eslint": "^8.26.0",
-    "typescript": "^4.9.4"
-  },
-  "dependencies": {
+    "path-browserify": "1.0.1",
+    "typescript": "^4.9.4",
+    "luna-setting": "0.7.0",
+    "micromark": "3.1.0",
+    "process": "0.11.10",
     "ftp": "^0.3.10",
     "jsonc-parser": "^0.4.2",
     "licia": "^1.38.0",
@@ -170,4 +212,5 @@
     "taskwarrior-lib": "^0.5.2",
     "underscore": "^1.13.6"
   }
+
 }

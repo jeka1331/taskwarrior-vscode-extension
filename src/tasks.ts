@@ -1,4 +1,4 @@
-import * as vscode from "vscode";
+import vscode = require( "vscode");
 import * as fs from "fs";
 import { execSync } from "child_process";
 import * as path from "path";

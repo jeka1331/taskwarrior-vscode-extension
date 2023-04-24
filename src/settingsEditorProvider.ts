@@ -1,24 +1,24 @@
-import * as vscode from "vscode";
-import { randomId } from "licia";
-import { lowerCase } from "licia";
+import * as vscode from 'vscode';
+import randomId from "licia/randomId";
+import lowerCase from "licia/lowerCase";
 import {
   getFileHandler,
   reopenWith,
   setContext,
   setDocument,
   getTextEditor,
-} from "./util";
+} from './util';
 
-export class taskwarriorTasksEditorProvider implements vscode.CustomTextEditorProvider {
+export class SettingsEditorProvider implements vscode.CustomTextEditorProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
-    const provider = new taskwarriorTasksEditorProvider(context);
+    const provider = new SettingsEditorProvider(context);
     const providerRegistration = vscode.window.registerCustomEditorProvider(
-      taskwarriorTasksEditorProvider.viewType,
+      SettingsEditorProvider.viewType,
       provider
     );
     return providerRegistration;
   }
-  private static readonly viewType = "taskwarrior-tasks.editTask";
+  private static readonly viewType = 'settingsEditor.settingsedit';
   constructor(private readonly context: vscode.ExtensionContext) {}
   public async resolveCustomTextEditor(
     document: vscode.TextDocument,
@@ -40,7 +40,7 @@ export class taskwarriorTasksEditorProvider implements vscode.CustomTextEditorPr
 
     const updateWebview = async () => {
       webviewPanel.webview.postMessage({
-        type: "update",
+        type: 'update',
         fileName: document.fileName,
         text: document.getText(),
         handler: await getFileHandler(document),
@@ -61,11 +61,11 @@ export class taskwarriorTasksEditorProvider implements vscode.CustomTextEditorPr
     });
 
     webviewPanel.webview.onDidReceiveMessage(async (e) => {
-      let result = "";
-      if (e.type === "command") {
+      let result = '';
+      if (e.type === 'command') {
         const { id, command, data } = e;
         switch (command) {
-          case "showOpenDialog":
+          case 'showOpenDialog':
             // eslint-disable-next-line no-case-declarations
             const paths = await vscode.window.showOpenDialog(data);
             if (paths) {
@@ -74,7 +74,7 @@ export class taskwarriorTasksEditorProvider implements vscode.CustomTextEditorPr
             break;
         }
         webviewPanel.webview.postMessage({
-          type: "commandCallback",
+          type: 'commandCallback',
           id,
           result,
         });
@@ -82,14 +82,14 @@ export class taskwarriorTasksEditorProvider implements vscode.CustomTextEditorPr
       }
 
       switch (e.type) {
-        case "update":
+        case 'update':
           this.updateTextDocument(document, e.text);
           break;
-        case "run":
+        case 'run':
           this.runCommand(e.command);
           break;
-        case "editSource":
-          reopenWith("default");
+        case 'editSource':
+          reopenWith('default');
           break;
       }
     });
@@ -101,7 +101,7 @@ export class taskwarriorTasksEditorProvider implements vscode.CustomTextEditorPr
     }
 
     webviewPanel.webview.postMessage({
-      type: "init",
+      type: 'init',
       space,
       language: lowerCase(vscode.env.language),
     });
@@ -114,10 +114,10 @@ export class taskwarriorTasksEditorProvider implements vscode.CustomTextEditorPr
       return options.tabSize || 2;
     }
 
-    return "\t";
+    return '\t';
   }
   private updateOpenSourceButton(show: boolean) {
-    setContext("settingsEditor.openSource", show);
+    setContext('settingsEditor.openSource', show);
   }
   private async updateTextDocument(document: vscode.TextDocument, text: any) {
     const edit = new vscode.WorkspaceEdit();
@@ -135,7 +135,7 @@ export class taskwarriorTasksEditorProvider implements vscode.CustomTextEditorPr
     const terminal = this.getTerminal();
     terminal.sendText(command);
     vscode.window.setStatusBarMessage(
-      vscode.l10n.t("Running command {command} in terminal settings editor", {
+      vscode.l10n.t('Running command {command} in terminal settings editor', {
         command,
       }),
       3000
@@ -145,18 +145,18 @@ export class taskwarriorTasksEditorProvider implements vscode.CustomTextEditorPr
     const terminals = vscode.window.terminals;
     for (let i = 0, len = terminals.length; i < len; i++) {
       const terminal = terminals[i];
-      if (terminal.name === "settings editor") {
+      if (terminal.name === 'settings editor') {
         return terminal;
       }
     }
-    return vscode.window.createTerminal("settings editor");
+    return vscode.window.createTerminal('settings editor');
   }
   private getHtmlForWebview(webview: vscode.Webview): string {
     const styleUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.context.extensionUri, "out", "editor.css")
+      vscode.Uri.joinPath(this.context.extensionUri, 'out', 'editor.css')
     );
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.context.extensionUri, "out", "editor.js")
+      vscode.Uri.joinPath(this.context.extensionUri, 'out', 'editor.js')
     );
     const nonce = randomId();
 

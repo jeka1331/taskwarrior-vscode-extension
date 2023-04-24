@@ -1,14 +1,15 @@
-"use strict";
+
 
 import { execSync } from "child_process";
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 import * as path from "path";
 import * as fs from "fs";
 import { tmpdir } from "os";
 
 import { TaskwarriorTaskProvider, Task } from "./tasks";
-import { taskwarriorTasksEditorProvider } from "./taskwarriorTasksEditor";
-import { Uri } from "vscode";
+import { SettingsEditorProvider } from './settingsEditorProvider';
+
+import {Uri} from "vscode";
 import {
   setContext,
   setDocument,
@@ -16,6 +17,7 @@ import {
   getFileHandler,
   setTextEditor,
 } from './util';
+
 export function activate(context: vscode.ExtensionContext) {
   const taskwarriorTaskProvider = new TaskwarriorTaskProvider();
   vscode.window.registerTreeDataProvider(
@@ -25,13 +27,10 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand("taskwarriorTasks.refreshEntry", () =>
   taskwarriorTaskProvider.refresh()
   );
-  // vscode.commands.registerCommand('extension.openPackageOnNpm', moduleName => vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(`https://www.npmjs.com/package/${moduleName}`)));
   vscode.commands.registerCommand("taskwarriorTasks.addEntry", () =>
     vscode.window.showInformationMessage(`Successfully called add entry.`)
   );
-  vscode.commands.registerCommand(
-    "taskwarriorTasks.editEntry",
-    async (node: Task) => {
+  vscode.commands.registerCommand("taskwarriorTasks.editEntry", async (node: Task) => {
       // console.log(node);
       // Create a unique file name with a ".tmp" extension
       const fileName = `temp-${Math.random()
@@ -56,15 +55,13 @@ export function activate(context: vscode.ExtensionContext) {
       await vscode.commands.executeCommand(
         "vscode.openWith",
         Uri.file(filePath),
-        "taskwarrior-tasks.editTaskId"
+        "default"
       );
 
       // execSync(`EDITOR="code -w" task edit ${node.version}`);
     }
   );
-  vscode.commands.registerCommand(
-    "taskwarriorTasks.deleteEntry",
-    async (node: Task) => {
+  vscode.commands.registerCommand("taskwarriorTasks.deleteEntry", async (node: Task) => {
       vscode.window.showInformationMessage(
         `Successfully called delete entry on ${node.version}.`,
         'Yes',
@@ -77,18 +74,34 @@ export function activate(context: vscode.ExtensionContext) {
     }
       
   );
-
-  // const openEditorCommand = vscode.commands.registerCommand(
-  //   "taskwarriorTasks.editEntry",
-  //   () => reopenWith("taskwarrior-tasks.editTask")
-
-  //   // () => reopenWith("taskwarrior-tasks.editTask")
-  // );
-  const openSourceCommand = vscode.commands.registerCommand(
-    "settingsEditor.openSource",
-    () => reopenWith("default")
+  vscode.commands.registerCommand('settingsEditor.openEditor',
+    () => reopenWith('settingsEditor.settingsedit')
+  );
+  vscode.commands.registerCommand('settingsEditor.openSource',
+    () => reopenWith('default')
   );
   // context.subscriptions.push(openEditorCommand);
-  context.subscriptions.push(openSourceCommand);
-  context.subscriptions.push(taskwarriorTasksEditorProvider.register(context));
+  // context.subscriptions.push(openSourceCommand);
+  context.subscriptions.push(SettingsEditorProvider.register(context));
 }
+vscode.window.onDidChangeActiveTextEditor(updateOpenEditorButton);
+
+async function updateOpenEditorButton(
+  textEditor: vscode.TextEditor | undefined
+) {
+  const key = 'settingsEditor.openEditor';
+  if (textEditor) {
+    setTextEditor(textEditor);
+    const document = textEditor.document;
+    if (await getFileHandler(document)) {
+      setDocument(document);
+      setContext(key, true);
+    } else {
+      setContext(key, false);
+    }
+  } else {
+    setContext(key, false);
+  }
+}
+
+updateOpenEditorButton(vscode.window.activeTextEditor);

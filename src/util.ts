@@ -1,10 +1,8 @@
-import { splitPath } from "licia";
-import * as vscode from "vscode";
-import { endWith } from "licia";
-import path = require("path");
+import * as vscode from 'vscode';
+
 
 export function setContext(name: string, value: any) {
-  vscode.commands.executeCommand("setContext", name, value);
+  vscode.commands.executeCommand('setContext', name, value);
 }
 
 let document: vscode.TextDocument | undefined;
@@ -38,49 +36,11 @@ export function reopenWith(editor: string) {
     }
   }
   if (uri) {
-    vscode.commands.executeCommand("vscode.openWith", uri, editor);
+    vscode.commands.executeCommand('vscode.openWith', uri, editor);
   }
 }
 
 export async function getFileHandler(document: vscode.TextDocument) {
-  const fileName = document.fileName;
-  const { name, dir } = splitPath(fileName);
+  return 'taskwarrior';
 
-  switch (name) {
-    case "app.json":
-    case "project.config.json":
-    case "project.private.config.json":
-    case "project.miniapp.json":
-      return "miniprogram";
-    case "package.json":
-    case ".npmrc":
-      return "npm";
-    case ".prettierrc":
-    case ".prettierrc.json":
-      return "prettier";
-    case "tsconfig.json":
-    case "cypress.json":
-    case ".eslintrc":
-    case ".eslintrc.json":
-    case "lerna.json":
-    case ".nycrc":
-    case ".nycrc.json":
-    case ".babelrc":
-    case ".babelrc.json":
-      return "schema";
-  }
-
-  // miniprogram page
-  if (endWith(name, ".tmp")) {
-    const wxmlPath = path.resolve(dir, name.replace(".json", ".wxml"));
-    const wxmlUri = vscode.Uri.file(wxmlPath);
-    try {
-      await vscode.workspace.fs.stat(wxmlUri);
-      return "miniprogram";
-    } catch (e) {
-      /* empty */
-    }
-  }
-
-  return "";
 }

@@ -15,7 +15,7 @@
             "stopOnEntry": false,
             "sourceMaps": true,
             "outFiles": [
-                "${workspaceRoot}/out/src/**/*.js"
+                "${workspaceRoot}/out/**/*.js"
             ],
             "preLaunchTask": "npm: watch"
         },
@@ -27,7 +27,7 @@
             "port": 5870,
             "restart": true,
             "outFiles": [
-                "${workspaceRoot}/out/src"
+                "${workspaceRoot}/out"
             ]
         }
     ]
