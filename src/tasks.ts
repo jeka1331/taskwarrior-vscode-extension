@@ -10,8 +10,24 @@ export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
     new vscode.EventEmitter<Task | undefined | void>();
   readonly onDidChangeTreeData: vscode.Event<Task | undefined | void> =
     this._onDidChangeTreeData.event;
-  // constructor(private workspaceRoot: string | undefined) {
-  // }
+
+
+  constructor(
+    private _status?: string 
+  ) {
+    this._status = _status ? _status : "deleted";
+  }
+  
+  public set status(v : string) {
+    this._status = v;
+  }
+
+  
+  public get status() : string {
+    return this._status ? this._status : "pending";
+  }
+  
+  
 
   refresh(): void {
     this._onDidChangeTreeData.fire();
@@ -38,21 +54,22 @@ export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
     const taskwarriorTasks: Task[] = [];
     if (this.pathExists(Task.TaskBinPath())) {
       try {
-        let result = execSync(`${Task.TaskBinPath()} status:pending export`).toString();
+        let result = execSync(`${Task.TaskBinPath()} status:${this.status} export`).toString();
         if (process.platform === 'win32') {
           result = "[" + result.split("\n").join(",").slice(0, -1) + "]";
         }
-        console.log(result);
+        // console.log(result);
         const taskData = JSON.parse(result.toString(), (key, value) => {
           return value;
         });
 
-        taskData.forEach((task: { description: string; id: string }) => {
+        taskData.forEach((task: { description: string; id: string ; uuid: string}) => {
           taskwarriorTasks.push(
             new Task(
               task.description,
               task.id,
-              vscode.TreeItemCollapsibleState.None
+              vscode.TreeItemCollapsibleState.None,
+              task.uuid
             )
           );
         });
@@ -78,7 +95,9 @@ export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
           new Task(
             value.description || "",
             value.id?.toString() || "",
-            vscode.TreeItemCollapsibleState.None
+            vscode.TreeItemCollapsibleState.None,
+            "НАДО СДЕЛАТЬ!!!"
+
           )
         );
       });
@@ -119,18 +138,19 @@ export class Task extends vscode.TreeItem {
     public readonly label: string,
     public readonly version: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+    public readonly uuid: string,
     public readonly command?: vscode.Command,
   ) {
     super(label, collapsibleState);
     
-    this.tooltip = `${this.label}-${this.version}`;
+    this.tooltip = uuid;
     this.description = this.version;
   }
   public getTaskForEdit(): string {
     
-    const result = execSync(`${Task.TaskBinPath()} export ${this.version}`).toString();
+    const result = execSync(`${Task.TaskBinPath()} uuid:${this.uuid} export`).toString();
     
-    // console.log(result);
+    console.log(this.version);
     return result || "";
   }
   public delete(): string {
@@ -147,7 +167,7 @@ export class Task extends vscode.TreeItem {
       "..",
       "resources",
       "light",
-      "dependency.svg"
+      "task.svg"
     ),
     dark: path.join(
       __filename,
@@ -155,7 +175,7 @@ export class Task extends vscode.TreeItem {
       "..",
       "resources",
       "dark",
-      "dependency.svg"
+      "task.svg"
     ),
   };
 

@@ -23,38 +23,55 @@ export default function handler(fileName: string, text: string) {
         key.charAt(0).toUpperCase() + key.slice(1),
       ]);
     }
-    
+
   }
-  setting.build([
-    // ['markdown', `### ${json.description}`],
-    ['title', `[# ${json.id}]  ${json.description}`],
+  if (json.status != "deleted") {
+    setting.build([
+      // ['markdown', `### ${json.description}`],
+      ['title', `[ ${json.id ? json.id : "DELETED"} ]  ${json.description}`],
 
-    [
-      'select',
-      'status',
-      def(json.status, json.status),
-      'Status',
-      {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        Completed: 'completed',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        Pending: 'pending',
-        // '': '',
-        // '': '',
-        // '': '',
-      },
-    ],
-    [
-      'text',
-      'description',
-      json.description,
-      'Description',
-    ],
-    
-    
+      [
+        'select',
+        'status',
+        def(json.status, json.status),
+        'Status',
+        {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          Completed: 'completed',
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          Pending: 'pending',
+          Waiting: 'waiting',
+          Recurring: 'recurring',
+          // '': '',
+          // '': '',
+          // '': '',
+        },
+      ],
+      [
+        'text',
+        'description',
+        json.description,
+        'Description',
+      ],
 
-  ].concat(udas).concat([[
-    'markdown',
-    `${JSON.stringify(json, null, 4)}`,
-  ]]));
+
+
+    ].concat(udas).concat([[
+      'markdown',
+      `${JSON.stringify(json, null, 4)}`,
+    ]]));
+  } else {
+    setting.build([
+      ['title', `[ ${json.id ? json.id : "DELETED"} ]  ${json.description}`],
+      [
+        'markdown',
+        json.description,
+      ],
+      [
+        'markdown',
+        `${JSON.stringify(json, null, 4)}`,
+      ]
+    ]);
+  }
+
 }

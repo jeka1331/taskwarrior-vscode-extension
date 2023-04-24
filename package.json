@@ -54,7 +54,7 @@
       "taskwarrior-tasks": [
         {
           "id": "taskwarriorTasks",
-          "name": "Taskss",
+          "name": "Tasks",
           "icon": "media/task.svg",
           "contextualTitle": "Tasks from Taskwarrior binary"
         },
