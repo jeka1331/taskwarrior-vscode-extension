@@ -10,5 +10,7 @@ Tested using the **MSYS2** system with the **task** package installed. To work, 
 
 ## Features 
 
+* Add (not fully featured)
+* Edit (with udas)
 * List current tasks
 * Delete tasks from a list
