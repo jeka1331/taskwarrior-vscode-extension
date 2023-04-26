@@ -16,6 +16,7 @@ import {
   getFileHandler,
   setTextEditor,
 } from "./util";
+import { TaskwarriorLib , Task as TaskFromLib} from "taskwarrior-lib";
 
 export function activate(context: vscode.ExtensionContext) {
   const taskwarriorTaskProvider = new TaskwarriorTaskProvider();
@@ -32,16 +33,14 @@ export function activate(context: vscode.ExtensionContext) {
     taskwarriorTaskProvider.refresh()
   );
   vscode.commands.registerCommand("taskwarriorTasks.addEntry", () =>
-    vscode.window.showInformationMessage(`Successfully called add entry.`)
+    Task.NewNode()
   );
   vscode.commands.registerCommand(
     "taskwarriorTasks.editEntry",
     async (node: Task) => {
       // console.log(node);
       // Create a unique file name with a ".tmp" extension
-      const fileName = `temp-${Math.random()
-        .toString(36)
-        .substring(2, 8)}.task`;
+      const fileName = `${node.uuid}.task`;
 
       // Get the path to the OS's temporary folder
       const tempFolder = fs.mkdtempSync(`${tmpdir()}${path.sep}`);
@@ -49,11 +48,10 @@ export function activate(context: vscode.ExtensionContext) {
       // Create the file in the temporary folder
       const filePath = path.join(tempFolder, fileName);
       fs.writeFileSync(filePath, node.getTaskForEdit());
-
       await vscode.commands.executeCommand(
         "vscode.openWith",
         Uri.file(filePath),
-        "default"
+        "settingsEditor.settingsedit"
       );
 
       // execSync(`EDITOR="code -w" task edit ${node.version}`);

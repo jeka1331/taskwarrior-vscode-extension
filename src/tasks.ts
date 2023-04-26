@@ -2,7 +2,7 @@ import vscode = require( "vscode");
 import * as fs from "fs";
 import { execSync } from "child_process";
 import * as path from "path";
-import { TaskwarriorLib } from "taskwarrior-lib";
+import { TaskwarriorLib , Task as TaskFromLib} from "taskwarrior-lib";
 import _ = require('underscore');
 
 export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
@@ -15,7 +15,7 @@ export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
   constructor(
     private _status?: string 
   ) {
-    this._status = _status ? _status : "deleted";
+    this._status = _status ? _status : "pending";
   }
   
   public set status(v : string) {
@@ -40,9 +40,9 @@ export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
   getChildren(element?: Task): Thenable<Task[]> {
     if (element) {
       // Это в случае, если есть вложенность у задачи (пока их нет)
-      return Promise.resolve(this.getTasksBin());
+      return Promise.resolve(this.getTasksLib());
     } else {
-      return Promise.resolve(this.getTasksBin());
+      return Promise.resolve(this.getTasksLib());
     }
   }
 
@@ -54,7 +54,9 @@ export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
     const taskwarriorTasks: Task[] = [];
     if (this.pathExists(Task.TaskBinPath())) {
       try {
-        let result = execSync(`${Task.TaskBinPath()} status:${this.status} export`).toString();
+        let result = execSync(`${Task.TaskBinPath()} export`).toString();
+        console.log(result);
+        
         if (process.platform === 'win32') {
           result = "[" + result.split("\n").join(",").slice(0, -1) + "]";
         }
@@ -93,10 +95,10 @@ export class TaskwarriorTaskProvider implements vscode.TreeDataProvider<Task> {
       result.forEach((value) => {
         taskwarriorTasks.push(
           new Task(
-            value.description || "",
-            value.id?.toString() || "",
+            value.description || "Missing UUID",
+            value.id?.toString() || "Missing UUID",
             vscode.TreeItemCollapsibleState.None,
-            "НАДО СДЕЛАТЬ!!!"
+            value.uuid || "Missing UUID"
 
           )
         );
@@ -133,6 +135,20 @@ export class Task extends vscode.TreeItem {
     return taskBinPath;
   }
 
+  public static NewNode() : any {
+    // description	String
+    // project	String
+    // priority	String
+    // tags *	String
+    // annotation *	String
+    const task : TaskFromLib = {
+      description: "Sample task",
+      annotations: []
+    };
+    (new TaskwarriorLib).update([task]);
+    vscode.commands.executeCommand('taskwarriorTasks.refreshEntry');
+  }
+
   constructor(
     
     public readonly label: string,
@@ -147,12 +163,14 @@ export class Task extends vscode.TreeItem {
     this.description = this.version;
   }
   public getTaskForEdit(): string {
+    const taskwarrior = new TaskwarriorLib();
     
-    const result = execSync(`${Task.TaskBinPath()} uuid:${this.uuid} export`).toString();
-    
+    const result = JSON.stringify(taskwarrior.load(`uuid:${this.uuid}`)[0]);
+    console.log();
     console.log(this.version);
     return result || "";
   }
+  
   public delete(): string {
     
     const result = execSync(`${Task.TaskBinPath()} ${this.version} delete`).toString();

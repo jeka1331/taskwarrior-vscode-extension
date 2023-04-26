@@ -75,7 +75,7 @@
     "commands": [
       {
         "command": "taskwarriorTasks.refreshEntry",
-        "title": "Refresh",
+        "title": "Refresh Tasks",
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
@@ -163,7 +163,7 @@
           },
           "taskwarrior.win32binpath": {
             "type": "string",
-            "default": "C:\\cygwin64\\bin\\task.exe"
+            "default": "C:\\msys64\\usr\\bin\\task.exe"
           }
         }
       }

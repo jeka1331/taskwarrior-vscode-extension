@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import randomId from "licia/randomId";
 import lowerCase from "licia/lowerCase";
+import url from 'url';
+
 import {
   getFileHandler,
   reopenWith,
@@ -8,6 +10,9 @@ import {
   setDocument,
   getTextEditor,
 } from './util';
+import { Task, TaskwarriorTaskProvider } from './tasks';
+import { exec, execSync } from 'child_process';
+import { TaskwarriorLib } from 'taskwarrior-lib';
 
 export class SettingsEditorProvider implements vscode.CustomTextEditorProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -83,7 +88,7 @@ export class SettingsEditorProvider implements vscode.CustomTextEditorProvider {
 
       switch (e.type) {
         case 'update':
-          this.updateTextDocument(document, e.text);
+          this.importTask(document, e.text);
           break;
         case 'run':
           this.runCommand(e.command);
@@ -130,6 +135,24 @@ export class SettingsEditorProvider implements vscode.CustomTextEditorProvider {
 
     await vscode.workspace.applyEdit(edit);
     document.save();
+  }
+
+  private async importTask(document: vscode.TextDocument, text: any) {
+    const edit = new vscode.WorkspaceEdit();
+
+    edit.replace(
+      document.uri,
+      new vscode.Range(0, 0, document.lineCount, 0),
+      text
+    );
+
+    await vscode.workspace.applyEdit(edit);
+    // console.log(JSON.parse(document.getText()));
+    (new TaskwarriorLib).update([JSON.parse(document.getText())]);
+    vscode.commands.executeCommand('taskwarriorTasks.refreshEntry');
+    document.save();
+    // (new TaskwarriorLib).update()
+      
   }
   private runCommand(command: string) {
     const terminal = this.getTerminal();
